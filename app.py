@@ -16,11 +16,11 @@ app = FastAPI()
 # from the website will fail with a CORS error even though the API itself works. ---
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],          # once your Vercel URL is live, replace "*" with
+    allow_origins=["https://insurance-incentive-prediction-g3ostnuxw-parthsharma-portfolio.vercel.app/"],          # once your Vercel URL is live, replace "*" with
                                    # e.g. ["https://your-site.vercel.app"] to lock it down
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["https://insurance-incentive-prediction-g3ostnuxw-parthsharma-portfolio.vercel.app/"],
+    allow_headers=["https://insurance-incentive-prediction-g3ostnuxw-parthsharma-portfolio.vercel.app/"],
 )
 
 
