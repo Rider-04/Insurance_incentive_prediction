@@ -3,197 +3,746 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Insurance Incentive Prediction</title>
-<link rel="stylesheet" href="style.css" />
+<title>Renewal Desk — Policy Renewal &amp; Incentive Calculator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink-navy:#14213D;
+    --ink-navy-deep:#0D1729;
+    --paper:#EDE7D8;
+    --paper-2:#F5F1E6;
+    --ink:#1B2A4A;
+    --ink-soft:#4A5877;
+    --brass:#B08D3E;
+    --brass-dark:#8C6F2E;
+    --brass-light:#D9BC7A;
+    --rust:#A63A2E;
+    --teal:#3F7367;
+    --line: rgba(27,42,74,0.14);
+    --radius: 4px;
+    --shadow-card: 0 20px 50px -20px rgba(13,23,41,0.55);
+  }
+
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:
+      radial-gradient(1200px 600px at 15% -10%, #1B2E52 0%, transparent 60%),
+      radial-gradient(900px 500px at 100% 0%, #1A2C4D 0%, transparent 55%),
+      var(--ink-navy-deep);
+    color:var(--paper-2);
+    font-family:'Inter', system-ui, sans-serif;
+    min-height:100vh;
+  }
+
+  .wrap{
+    max-width:1180px;
+    margin:0 auto;
+    padding: 48px 24px 80px;
+  }
+
+  /* ---------- header ---------- */
+  header.top{
+    display:flex;
+    align-items:flex-end;
+    justify-content:space-between;
+    gap:24px;
+    margin-bottom:44px;
+    border-bottom:1px solid rgba(237,231,216,0.16);
+    padding-bottom:28px;
+    flex-wrap:wrap;
+  }
+  .brand{
+    display:flex;
+    align-items:center;
+    gap:14px;
+  }
+  .brand-mark{
+    width:42px;height:42px;border-radius:50%;
+    border:1.5px solid var(--brass-light);
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Fraunces', serif;
+    font-weight:600;
+    font-size:17px;
+    color:var(--brass-light);
+    flex-shrink:0;
+  }
+  .brand-text .eyebrow{
+    text-transform:uppercase;
+    letter-spacing:0.14em;
+    font-size:11px;
+    color:var(--brass-light);
+    margin:0 0 4px;
+    font-weight:600;
+  }
+  .brand-text h1{
+    font-family:'Fraunces', serif;
+    font-size:26px;
+    font-weight:600;
+    margin:0;
+    color:var(--paper-2);
+    letter-spacing:-0.01em;
+  }
+  header.top p.tagline{
+    max-width:360px;
+    margin:0;
+    font-size:14.5px;
+    line-height:1.55;
+    color:rgba(237,231,216,0.72);
+  }
+
+  /* ---------- layout ---------- */
+  .desk{
+    display:grid;
+    grid-template-columns: 1.15fr 0.85fr;
+    gap:28px;
+    align-items:start;
+  }
+  @media (max-width: 880px){
+    .desk{grid-template-columns:1fr;}
+  }
+
+  .card{
+    background:var(--paper);
+    color:var(--ink);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-card);
+    position:relative;
+    overflow:hidden;
+  }
+  .card::before{
+    content:"";
+    position:absolute;
+    top:0;left:0;right:0;
+    height:6px;
+    background:linear-gradient(90deg, var(--brass) 0%, var(--brass-light) 50%, var(--brass) 100%);
+  }
+
+  /* ---------- form card ---------- */
+  form.ledger{
+    padding: 34px 34px 30px;
+  }
+  .ledger h2{
+    font-family:'Fraunces', serif;
+    font-size:19px;
+    font-weight:600;
+    margin:0 0 2px;
+  }
+  .ledger .sub{
+    font-size:13px;
+    color:var(--ink-soft);
+    margin:0 0 26px;
+  }
+
+  fieldset{
+    border:none;
+    padding:0;
+    margin:0 0 26px;
+  }
+  fieldset legend{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:0.1em;
+    color:var(--brass-dark);
+    padding:0 0 10px;
+    border-bottom:1px solid var(--line);
+    width:100%;
+    margin-bottom:16px;
+  }
+
+  .row{
+    display:grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap:16px 18px;
+  }
+  .row.three{grid-template-columns: repeat(3, 1fr);}
+  @media (max-width: 520px){
+    .row, .row.three{grid-template-columns: 1fr;}
+  }
+
+  .field label{
+    display:block;
+    font-size:12.5px;
+    font-weight:600;
+    color:var(--ink);
+    margin-bottom:6px;
+  }
+  .field .hint{
+    display:block;
+    font-size:11px;
+    color:var(--ink-soft);
+    font-weight:400;
+    margin-top:1px;
+  }
+  .field input[type="number"],
+  .field select{
+    width:100%;
+    padding:9px 11px;
+    border-radius:3px;
+    border:1px solid var(--line);
+    background:var(--paper-2);
+    color:var(--ink);
+    font-family:'IBM Plex Mono', monospace;
+    font-size:13.5px;
+    outline:none;
+    transition:border-color .15s ease, box-shadow .15s ease;
+  }
+  .field select{font-family:'Inter',sans-serif;}
+  .field input[type="number"]:focus,
+  .field select:focus,
+  .field input[type="range"]:focus-visible{
+    border-color:var(--brass);
+    box-shadow:0 0 0 3px rgba(176,141,62,0.22);
+  }
+
+  .slider-field{grid-column: 1 / -1;}
+  .slider-head{
+    display:flex;justify-content:space-between;align-items:baseline;
+    margin-bottom:6px;
+  }
+  .slider-value{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:13px;
+    color:var(--brass-dark);
+    font-weight:600;
+  }
+  input[type="range"]{
+    -webkit-appearance:none;
+    width:100%;
+    height:4px;
+    border-radius:2px;
+    background:var(--line);
+    accent-color:var(--brass);
+  }
+
+  .toggle-group{
+    display:flex;
+    gap:8px;
+  }
+  .toggle-group button{
+    flex:1;
+    padding:9px 10px;
+    border-radius:3px;
+    border:1px solid var(--line);
+    background:var(--paper-2);
+    color:var(--ink-soft);
+    font-family:'Inter',sans-serif;
+    font-size:13px;
+    font-weight:600;
+    cursor:pointer;
+    transition:all .15s ease;
+  }
+  .toggle-group button.active{
+    background:var(--ink-navy);
+    border-color:var(--ink-navy);
+    color:var(--paper-2);
+  }
+
+  .submit-row{
+    margin-top:6px;
+    display:flex;
+    align-items:center;
+    gap:14px;
+    flex-wrap:wrap;
+  }
+  button.submit{
+    background:var(--ink-navy);
+    color:var(--paper-2);
+    border:none;
+    padding:13px 26px;
+    border-radius:3px;
+    font-family:'Inter',sans-serif;
+    font-size:14px;
+    font-weight:600;
+    letter-spacing:0.01em;
+    cursor:pointer;
+    display:inline-flex;
+    align-items:center;
+    gap:10px;
+    transition:background .15s ease, transform .1s ease;
+  }
+  button.submit:hover{background:#1B2E52;}
+  button.submit:active{transform:translateY(1px);}
+  button.submit:disabled{opacity:0.65; cursor:progress;}
+  .spin{
+    width:13px;height:13px;border-radius:50%;
+    border:2px solid rgba(237,231,216,0.35);
+    border-top-color:var(--paper-2);
+    animation:spin 0.8s linear infinite;
+    display:none;
+  }
+  button.submit.loading .spin{display:inline-block;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+
+  .cold-note{
+    font-size:11.5px;
+    color:var(--ink-soft);
+    margin:0;
+    max-width:280px;
+    line-height:1.4;
+  }
+
+  /* ---------- result card ---------- */
+  .result-card{
+    padding: 34px 30px;
+    min-height: 420px;
+    display:flex;
+    flex-direction:column;
+  }
+  .result-card h2{
+    font-family:'Fraunces', serif;
+    font-size:19px;
+    font-weight:600;
+    margin:0 0 2px;
+  }
+  .result-card .sub{
+    font-size:13px;
+    color:var(--ink-soft);
+    margin:0 0 22px;
+  }
+
+  .empty-state{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    color:var(--ink-soft);
+    gap:14px;
+    padding: 20px 10px;
+  }
+  .empty-state .ring{
+    width:74px;height:74px;border-radius:50%;
+    border:1.5px dashed rgba(27,42,74,0.28);
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Fraunces', serif;
+    font-size:12px;
+    color:rgba(27,42,74,0.4);
+  }
+  .empty-state p{
+    font-size:13px;
+    max-width:220px;
+    margin:0;
+    line-height:1.55;
+  }
+
+  .error-state{
+    flex:1;
+    display:none;
+    flex-direction:column;
+    justify-content:center;
+    gap:10px;
+    padding:10px 4px;
+  }
+  .error-state.show{display:flex;}
+  .error-state .stamp-label{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+    color:var(--rust);
+    border:1px solid var(--rust);
+    display:inline-block;
+    padding:3px 8px;
+    border-radius:2px;
+    width:fit-content;
+    transform:rotate(-2deg);
+  }
+  .error-state p{
+    font-size:13.5px;
+    color:var(--ink);
+    line-height:1.55;
+    margin:0;
+  }
+
+  .result-body{
+    display:none;
+    flex:1;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:22px;
+    text-align:center;
+  }
+  .result-body.show{display:flex;}
+
+  .seal{
+    width:150px;height:150px;
+    border-radius:50%;
+    border:2.5px solid var(--brass);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    position:relative;
+    animation: stampIn 0.5s cubic-bezier(.2,1.4,.4,1) both;
+  }
+  .seal::before{
+    content:"";
+    position:absolute;
+    inset:8px;
+    border-radius:50%;
+    border:1px solid rgba(176,141,62,0.45);
+  }
+  .seal .seal-label{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:9.5px;
+    letter-spacing:0.12em;
+    text-transform:uppercase;
+    color:var(--brass-dark);
+    margin-bottom:4px;
+  }
+  .seal .seal-value{
+    font-family:'Fraunces', serif;
+    font-size:26px;
+    font-weight:600;
+    color:var(--ink-navy);
+    line-height:1.1;
+  }
+  .seal .seal-sub{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:9px;
+    color:var(--brass-dark);
+    margin-top:4px;
+    letter-spacing:0.08em;
+  }
+
+  @keyframes stampIn{
+    0%{opacity:0; transform:scale(1.5) rotate(-8deg);}
+    60%{opacity:1;}
+    100%{opacity:1; transform:scale(1) rotate(-4deg);}
+  }
+  @media (prefers-reduced-motion: reduce){
+    .seal{animation:none;}
+  }
+
+  .figures{
+    width:100%;
+    display:flex;
+    justify-content:center;
+    gap:28px;
+    border-top:1px solid var(--line);
+    padding-top:20px;
+  }
+  .figure .flabel{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:10.5px;
+    text-transform:uppercase;
+    letter-spacing:0.08em;
+    color:var(--ink-soft);
+    margin-bottom:5px;
+  }
+  .figure .fvalue{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:15px;
+    font-weight:600;
+    color:var(--ink);
+  }
+  .figure .fvalue.rev-pos{color:var(--teal);}
+  .figure .fvalue.rev-neg{color:var(--rust);}
+
+  .note{
+    font-size:11.5px;
+    color:var(--ink-soft);
+    max-width:280px;
+    line-height:1.5;
+    margin:0;
+  }
+
+  footer{
+    margin-top:52px;
+    text-align:center;
+    font-size:11.5px;
+    color:rgba(237,231,216,0.4);
+  }
+</style>
 </head>
 <body>
+<div class="wrap">
 
-  <div class="bg-grid" aria-hidden="true"></div>
-
-  <header class="app-header">
-    <div class="header-inner">
-      <div class="brand">
-        <span class="brand-mark" aria-hidden="true">
-          <svg viewBox="0 0 32 32" width="26" height="26">
-            <path d="M16 2 L28 8 V16 C28 23.5 22.8 28.6 16 30 C9.2 28.6 4 23.5 4 16 V8 Z"
-                  fill="none" stroke="currentColor" stroke-width="2"/>
-            <path d="M11 16.5 L14.5 20 L21.5 12.5" fill="none" stroke="currentColor"
-                  stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </span>
-        <span class="brand-name">Renewal<strong>IQ</strong></span>
-      </div>
-      <div class="api-status" id="apiStatus" role="status">
-        <span class="status-dot" aria-hidden="true"></span>
-        <span class="status-text">API Status: Ready</span>
+  <header class="top">
+    <div class="brand">
+      <div class="brand-mark">RD</div>
+      <div class="brand-text">
+        <p class="eyebrow">Policy Renewal Desk</p>
+        <h1>Renewal &amp; Incentive Calculator</h1>
       </div>
     </div>
+    <p class="tagline">Enter a policyholder's details to see how likely they are to renew, and the incentive that earns the most net revenue on this policy.</p>
   </header>
 
-  <main class="page">
+  <div class="desk">
 
-    <section class="hero">
-      <p class="hero-eyebrow">Underwriting decision support</p>
-      <h1 class="hero-title">Insurance Incentive Prediction</h1>
-      <p class="hero-subtitle">
-        Enter applicant information to generate a prediction using the deployed machine learning model.
-      </p>
-    </section>
+    <!-- FORM -->
+    <div class="card">
+      <form class="ledger" id="policyForm">
+        <h2>Policy entry</h2>
+        <p class="sub">All fields are required for an accurate estimate.</p>
 
-    <div class="workspace">
-
-      <!-- FORM CARD -->
-      <section class="card form-card" aria-labelledby="form-heading">
-        <div class="card-head">
-          <h2 id="form-heading">Applicant &amp; Policy Details</h2>
-          <p class="card-subtext">All 11 fields are required by the model.</p>
-        </div>
-
-        <form id="predictionForm" novalidate>
-
-          <div class="field-grid">
-
+        <fieldset>
+          <legend>Policyholder</legend>
+          <div class="row three">
             <div class="field">
-              <label for="perc_premium_paid_by_cash_credit">Percentage Premium Paid by Cash/Credit</label>
-              <input type="number" step="any" id="perc_premium_paid_by_cash_credit"
-                     name="perc_premium_paid_by_cash_credit"
-                     placeholder="e.g. 0.97"
-                     aria-describedby="perc_premium_paid_by_cash_credit-hint perc_premium_paid_by_cash_credit-error" />
-              <span class="field-hint" id="perc_premium_paid_by_cash_credit-hint">Ratio between 0 and 1.</span>
-              <span class="field-error" id="perc_premium_paid_by_cash_credit-error" role="alert"></span>
+              <label for="age">Age<span class="hint">in years</span></label>
+              <input type="number" id="age" min="18" max="100" step="1" value="46" required>
             </div>
-
             <div class="field">
-              <label for="age_in_days">Age in Days</label>
-              <input type="number" step="any" id="age_in_days" name="age_in_days"
-                     placeholder="e.g. 16800"
-                     aria-describedby="age_in_days-error" />
-              <span class="field-error" id="age_in_days-error" role="alert"></span>
+              <label for="income">Annual income<span class="hint">₹ per year</span></label>
+              <input type="number" id="income" min="0" step="100" value="360050" required>
             </div>
-
             <div class="field">
-              <label for="Income">Income</label>
-              <input type="number" step="any" id="Income" name="Income"
-                     placeholder="e.g. 360050"
-                     aria-describedby="Income-error" />
-              <span class="field-error" id="Income-error" role="alert"></span>
+              <label>Residence area</label>
+              <div class="toggle-group" id="residenceToggle">
+                <button type="button" data-value="Urban" class="active">Urban</button>
+                <button type="button" data-value="Rural">Rural</button>
+              </div>
             </div>
-
-            <div class="field">
-              <label for="Count_3_6_months_late">Count of Payments 3–6 Months Late</label>
-              <input type="number" step="any" id="Count_3_6_months_late" name="Count_3_6_months_late"
-                     placeholder="e.g. 0"
-                     aria-describedby="Count_3_6_months_late-error" />
-              <span class="field-error" id="Count_3_6_months_late-error" role="alert"></span>
-            </div>
-
-            <div class="field">
-              <label for="Count_6_12_months_late">Count of Payments 6–12 Months Late</label>
-              <input type="number" step="any" id="Count_6_12_months_late" name="Count_6_12_months_late"
-                     placeholder="e.g. 0"
-                     aria-describedby="Count_6_12_months_late-error" />
-              <span class="field-error" id="Count_6_12_months_late-error" role="alert"></span>
-            </div>
-
-            <div class="field">
-              <label for="Count_more_than_12_months_late">Count of Payments More Than 12 Months Late</label>
-              <input type="number" step="any" id="Count_more_than_12_months_late" name="Count_more_than_12_months_late"
-                     placeholder="e.g. 0"
-                     aria-describedby="Count_more_than_12_months_late-error" />
-              <span class="field-error" id="Count_more_than_12_months_late-error" role="alert"></span>
-            </div>
-
-            <div class="field">
-              <label for="application_underwriting_score">Application Underwriting Score</label>
-              <input type="number" step="any" id="application_underwriting_score" name="application_underwriting_score"
-                     placeholder="e.g. 99.7"
-                     aria-describedby="application_underwriting_score-error" />
-              <span class="field-error" id="application_underwriting_score-error" role="alert"></span>
-            </div>
-
-            <div class="field">
-              <label for="no_of_premiums_paid">Number of Premiums Paid</label>
-              <input type="number" step="any" id="no_of_premiums_paid" name="no_of_premiums_paid"
-                     placeholder="e.g. 9"
-                     aria-describedby="no_of_premiums_paid-error" />
-              <span class="field-error" id="no_of_premiums_paid-error" role="alert"></span>
-            </div>
-
-            <div class="field">
-              <label for="sourcing_channel">Sourcing Channel</label>
-              <select id="sourcing_channel" name="sourcing_channel" aria-describedby="sourcing_channel-error">
-                <option value="" disabled selected>Select channel</option>
-              </select>
-              <span class="field-error" id="sourcing_channel-error" role="alert"></span>
-            </div>
-
-            <div class="field">
-              <label for="residence_area_type">Residence Area Type</label>
-              <select id="residence_area_type" name="residence_area_type" aria-describedby="residence_area_type-error">
-                <option value="" disabled selected>Select area type</option>
-              </select>
-              <span class="field-error" id="residence_area_type-error" role="alert"></span>
-            </div>
-
-            <div class="field">
-              <label for="premium">Premium</label>
-              <input type="number" step="any" id="premium" name="premium"
-                     placeholder="e.g. 3300"
-                     aria-describedby="premium-error" />
-              <span class="field-error" id="premium-error" role="alert"></span>
-            </div>
-
           </div>
+        </fieldset>
 
-          <div class="form-actions">
-            <button type="submit" class="btn btn-primary" id="predictBtn">
-              <span class="btn-label">Run Prediction</span>
-              <span class="btn-spinner" aria-hidden="true"></span>
-            </button>
-            <button type="button" class="btn btn-ghost" id="resetBtn">Reset</button>
+        <fieldset>
+          <legend>Payment history</legend>
+          <div class="row">
+            <div class="slider-field">
+              <div class="slider-head">
+                <label for="percCash" style="margin:0;">Premium paid by cash / credit</label>
+                <span class="slider-value" id="percCashValue">97%</span>
+              </div>
+              <input type="range" id="percCash" min="0" max="100" step="1" value="97">
+            </div>
           </div>
+          <div class="row three" style="margin-top:16px;">
+            <div class="field">
+              <label for="late36">Late 3–6 months<span class="hint">number of times</span></label>
+              <input type="number" id="late36" min="0" step="1" value="0" required>
+            </div>
+            <div class="field">
+              <label for="late612">Late 6–12 months<span class="hint">number of times</span></label>
+              <input type="number" id="late612" min="0" step="1" value="0" required>
+            </div>
+            <div class="field">
+              <label for="lateMore12">Late 12+ months<span class="hint">number of times</span></label>
+              <input type="number" id="lateMore12" min="0" step="1" value="0" required>
+            </div>
+          </div>
+        </fieldset>
 
-          <p class="loading-note" id="loadingNote" role="status" aria-live="polite" hidden>
-            Running prediction&hellip; the prediction service may take a few seconds to respond.
-          </p>
+        <fieldset>
+          <legend>Policy details</legend>
+          <div class="row three">
+            <div class="field">
+              <label for="score">Underwriting score<span class="hint">0–100</span></label>
+              <input type="number" id="score" min="0" max="100" step="0.01" value="99.7" required>
+            </div>
+            <div class="field">
+              <label for="numPremiums">Premiums paid<span class="hint">count so far</span></label>
+              <input type="number" id="numPremiums" min="0" step="1" value="9" required>
+            </div>
+            <div class="field">
+              <label for="channel">Sourcing channel</label>
+              <select id="channel">
+                <option value="A">A</option>
+                <option value="B">B</option>
+                <option value="C">C</option>
+                <option value="D" selected>D</option>
+                <option value="E">E</option>
+              </select>
+            </div>
+          </div>
+          <div class="row" style="margin-top:16px;">
+            <div class="field" style="grid-column:1 / -1;">
+              <label for="premium">Premium amount<span class="hint">₹ due this cycle</span></label>
+              <input type="number" id="premium" min="0" step="1" value="3300" required>
+            </div>
+          </div>
+        </fieldset>
 
-          <div class="form-error" id="formError" role="alert" hidden></div>
-
-        </form>
-      </section>
-
-      <!-- RESULT CARD -->
-      <section class="card result-card" id="resultSection" aria-labelledby="result-heading" hidden>
-        <div class="card-head">
-          <h2 id="result-heading">Prediction Result</h2>
-          <p class="card-subtext">Generated by the deployed model.</p>
+        <div class="submit-row">
+          <button type="submit" class="submit" id="submitBtn">
+            <span class="spin"></span>
+            <span class="btn-label">Calculate incentive</span>
+          </button>
+          <p class="cold-note">First calculation after a while can take up to a minute — the server is waking up.</p>
         </div>
-        <div id="resultContent" class="result-content"></div>
-      </section>
-
-      <!-- MODEL INFO CARD -->
-      <section class="card info-card" aria-labelledby="info-heading">
-        <div class="card-head">
-          <h2 id="info-heading">Model Information</h2>
-        </div>
-        <dl class="info-grid">
-          <div class="info-item"><dt>Model</dt><dd>Insurance Incentive Prediction</dd></div>
-          <div class="info-item"><dt>Backend</dt><dd>FastAPI</dd></div>
-          <div class="info-item"><dt>Server</dt><dd>Uvicorn</dd></div>
-          <div class="info-item"><dt>Deployment</dt><dd>Render</dd></div>
-          <div class="info-item"><dt>Frontend</dt><dd>HTML + CSS + JavaScript</dd></div>
-          <div class="info-item"><dt>Endpoint</dt><dd>POST /predict</dd></div>
-        </dl>
-        <p class="info-note">The API connection is verified when a prediction is submitted.</p>
-      </section>
-
+      </form>
     </div>
-  </main>
 
-  <footer class="app-footer">
-    <p>RenewalIQ &mdash; connects directly to the deployed prediction API. No data is stored.</p>
-  </footer>
+    <!-- RESULT -->
+    <div class="card result-card">
+      <h2>Result</h2>
+      <p class="sub">Recommended agent incentive for this policy</p>
 
-  <script src="script.js"></script>
+      <div class="empty-state" id="emptyState">
+        <div class="ring">n/a</div>
+        <p>Fill in the policy entry and calculate to see the recommended incentive here.</p>
+      </div>
+
+      <div class="error-state" id="errorState">
+        <span class="stamp-label">Entry rejected</span>
+        <p id="errorMessage">Something went wrong.</p>
+      </div>
+
+      <div class="result-body" id="resultBody">
+        <div class="seal">
+          <span class="seal-label">Offer</span>
+          <span class="seal-value" id="incentiveValue">₹0</span>
+          <span class="seal-sub">incentive</span>
+        </div>
+        <div class="figures">
+          <div class="figure">
+            <div class="flabel">Premium</div>
+            <div class="fvalue" id="premiumValue">₹0</div>
+          </div>
+          <div class="figure">
+            <div class="flabel">Net revenue</div>
+            <div class="fvalue" id="revenueValue">₹0</div>
+          </div>
+        </div>
+        <p class="note">This is the incentive that maximizes projected net revenue after payout, based on the model's renewal probability for this policy.</p>
+      </div>
+    </div>
+
+  </div>
+
+  <footer>Renewal Desk · estimates are model-based projections, not guarantees</footer>
+</div>
+
+<script>
+  const API_URL = "https://insurance-incentive-prediction.onrender.com/predict";
+
+  // residence toggle
+  const residenceToggle = document.getElementById('residenceToggle');
+  let residenceValue = 'Urban';
+  residenceToggle.addEventListener('click', (e) => {
+    const btn = e.target.closest('button');
+    if(!btn) return;
+    [...residenceToggle.children].forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    residenceValue = btn.dataset.value;
+  });
+
+  // slider live value
+  const percCash = document.getElementById('percCash');
+  const percCashValue = document.getElementById('percCashValue');
+  percCash.addEventListener('input', () => {
+    percCashValue.textContent = percCash.value + '%';
+  });
+
+  const form = document.getElementById('policyForm');
+  const submitBtn = document.getElementById('submitBtn');
+  const btnLabel = submitBtn.querySelector('.btn-label');
+
+  const emptyState = document.getElementById('emptyState');
+  const errorState = document.getElementById('errorState');
+  const errorMessage = document.getElementById('errorMessage');
+  const resultBody = document.getElementById('resultBody');
+
+  const incentiveValue = document.getElementById('incentiveValue');
+  const premiumValue = document.getElementById('premiumValue');
+  const revenueValue = document.getElementById('revenueValue');
+
+  function money(n){
+    return '₹' + Number(n).toLocaleString('en-IN', {maximumFractionDigits: 0});
+  }
+
+  function showEmpty(){
+    emptyState.style.display = 'flex';
+    errorState.classList.remove('show');
+    resultBody.classList.remove('show');
+  }
+  function showError(msg){
+    emptyState.style.display = 'none';
+    resultBody.classList.remove('show');
+    errorMessage.textContent = msg;
+    errorState.classList.add('show');
+  }
+  function showResult(premium, revenue, incentive){
+    emptyState.style.display = 'none';
+    errorState.classList.remove('show');
+    // retrigger animation
+    resultBody.classList.remove('show');
+    void resultBody.offsetWidth;
+    incentiveValue.textContent = money(incentive);
+    premiumValue.textContent = money(premium);
+    revenueValue.textContent = money(revenue);
+    revenueValue.classList.toggle('rev-pos', revenue >= 0);
+    revenueValue.classList.toggle('rev-neg', revenue < 0);
+    resultBody.classList.add('show');
+  }
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const age = Number(document.getElementById('age').value);
+    const income = Number(document.getElementById('income').value);
+    const late36 = Number(document.getElementById('late36').value);
+    const late612 = Number(document.getElementById('late612').value);
+    const lateMore12 = Number(document.getElementById('lateMore12').value);
+    const score = Number(document.getElementById('score').value);
+    const numPremiums = Number(document.getElementById('numPremiums').value);
+    const channel = document.getElementById('channel').value;
+    const premium = Number(document.getElementById('premium').value);
+    const percCashDecimal = Number(percCash.value) / 100;
+
+    // exact column order the API expects:
+    // perc_premium_paid_by_cash_credit, age_in_days, Income,
+    // Count_3-6_months_late, Count_6-12_months_late, Count_more_than_12_months_late,
+    // application_underwriting_score, no_of_premiums_paid,
+    // sourcing_channel, residence_area_type, premium
+    const row = [
+      percCashDecimal,
+      age * 365,
+      income,
+      late36,
+      late612,
+      lateMore12,
+      score,
+      numPremiums,
+      channel,
+      residenceValue,
+      premium
+    ];
+
+    submitBtn.disabled = true;
+    submitBtn.classList.add('loading');
+    btnLabel.textContent = 'Consulting the ledger…';
+
+    try{
+      const res = await fetch(API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ data: [row] })
+      });
+
+      if(!res.ok){
+        let detail = 'The server could not process this entry.';
+        try{
+          const errJson = await res.json();
+          if(errJson && errJson.detail) detail = errJson.detail;
+        }catch(_){}
+        throw new Error(detail);
+      }
+
+      const json = await res.json();
+      const result = json.Result && json.Result[0];
+      if(!result) throw new Error('The server returned no result for this entry.');
+
+      showResult(result.premium, result.revenue, result.incentive);
+    }catch(err){
+      showError(err.message || 'Could not reach the calculator. Please try again.');
+    }finally{
+      submitBtn.disabled = false;
+      submitBtn.classList.remove('loading');
+      btnLabel.textContent = 'Calculate incentive';
+    }
+  });
+
+  showEmpty();
+</script>
 </body>
 </html>

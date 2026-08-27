@@ -7,7 +7,7 @@
 /* --------------------------- CONFIGURATION ------------------------------ */
 
 const API_URL =
-  "https://insurance-incentive-prediction.onrender.com/predict";
+  "https://insurance-incentive-prediction.onrender.com/docs";
 
 const FEATURE_ORDER = [
   "perc_premium_paid_by_cash_credit",
