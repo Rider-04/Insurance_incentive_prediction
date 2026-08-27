@@ -13,7 +13,7 @@ from fastapi.middleware.cors import CORSMiddleware
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "https://your-project-name.vercel.app",
+        "https://insurance-incentive-prediction.vercel.app/",
     ],
     allow_credentials=True,
     allow_methods=["POST", "OPTIONS"],
