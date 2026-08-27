@@ -16,10 +16,12 @@ app = FastAPI()
 # from the website will fail with a CORS error even though the API itself works. ---
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://insurance-incentive-prediction-parthsharma-portfolio.vercel.app"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_origins=[
+        "https://insurance-incentive-prediction.vercel.app"
+    ],
+    allow_credentials=False,
+    allow_methods=["POST", "OPTIONS"],
+    allow_headers=["Content-Type"],
 )
 
 class RevenueRenewal(BaseModel):
